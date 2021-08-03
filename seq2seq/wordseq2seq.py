@@ -270,7 +270,7 @@ def fit_model(model,
                   loss='categorical_crossentropy')
 
     #early_stopping = EarlyStopping(monitor='val_loss', patience=10)
-    checkpointer = ModelCheckpoint(filepath='word_models/weights.{epoch:02d}.h5',
+    checkpointer = ModelCheckpoint(filepath='hypo_word_models/weights.{epoch:02d}.h5',
                                    verbose=0,
                                    save_weights_only=False,
                                    save_best_only=False,
@@ -289,7 +289,7 @@ def fit_model(model,
                         )
                         ##validation_split=0.2)
 
-    model.save('word_models/'+save_filename)
+    model.save('hypo_word_models/'+save_filename)
     return history
 
 
@@ -405,21 +405,21 @@ if __name__ == "__main__":
     char_decoding = {'max_decoder_seq_length': max_target_sentence_length,
                      'target_i2c': target_i2w}
 
-    if not os.path.exists('./word_models'):
-        os.makedirs('./word_models')
+    if not os.path.exists('./hypo_word_models'):
+        os.makedirs('./hypo_word_models')
 
-    dataloader.write_dict_to_json('word_models/word_decoding.json', char_decoding)
-    dataloader.write_dict_to_json('word_models/word_encoding.json', char_encoding)
+    dataloader.write_dict_to_json('hypo_word_models/word_decoding.json', char_decoding)
+    dataloader.write_dict_to_json('hypo_word_models/word_encoding.json', char_encoding)
 
     if src_emb_file is not None:
         src_w2v = dataloader.load_embs(src_emb_file)
-        emb_matrix_src, src_OOV = dataloader.get_emb_matrix(input_i2w, src_w2v, embedding_size, oov_filename='word_models/src_oov.txt')
+        emb_matrix_src, src_OOV = dataloader.get_emb_matrix(input_i2w, src_w2v, embedding_size, oov_filename='hypo_word_models/src_oov.txt')
     else:
         emb_matrix_src = None
 
     if tgt_emb_file is not None:
         tgt_w2v = dataloader.load_embs(tgt_emb_file)
-        emb_matrix_tgt, tgt_OOV = dataloader.get_emb_matrix(target_i2w, tgt_w2v, embedding_size, oov_filename='word_models/tgt_oov.txt')
+        emb_matrix_tgt, tgt_OOV = dataloader.get_emb_matrix(target_i2w, tgt_w2v, embedding_size, oov_filename='hypo_word_models/tgt_oov.txt')
     else:
         emb_matrix_tgt = None
 
@@ -447,9 +447,9 @@ if __name__ == "__main__":
                         MODEL_NAME,
                         save_checkpoint_epochs)
 
-    decoder_model = make_decoder(model, has_attention=has_attention)
+    #decoder_model = make_decoder(model, has_attention=has_attention)
 
-    encoder_model = make_encoder(model, num_unique_input_chars, has_attention=has_attention)
+    #encoder_model = make_encoder(model, num_unique_input_chars, has_attention=has_attention)
 
 
 #NOTE: to load the model from disk:

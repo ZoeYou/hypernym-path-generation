@@ -8,5 +8,5 @@ echo $INFILE
 echo $OUTFILE
 echo $SUMMARYFILE
 
-python print_output.py $INFILE $OUTFILE # will write to outfile
-python score.py $NAME $OUTFILE $SUMMARYFILE
+python print_output_beam.py $INFILE $OUTFILE # will write to outfile
+python score_beam.py $NAME $OUTFILE $SUMMARYFILE

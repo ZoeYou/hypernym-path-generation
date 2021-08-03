@@ -1,12 +1,13 @@
 from nltk.corpus import wordnet as wn
 from tqdm import tqdm
 
-with open('all_synset_names') as in_f:
-    with open('all_paths', 'w') as out_f:
+## create paths for a list of synsets
+with open('../WN18RR-hp/noun/train.txt') as in_f:
+    with open('all_paths.txt', 'w') as out_f:
         max_len = 0
         for line in tqdm(in_f.readlines()):
-            l = line.strip()
-            paths = wn.synset(l).hypernym_paths()
+            l = line.split('\t')[0]
+            paths = wn.synset(l.strip()).hypernym_paths()
             '''
             try:
                 assert len(paths) == 1

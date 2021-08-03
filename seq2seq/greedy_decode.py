@@ -44,7 +44,7 @@ def decode_sequence(encoder_model, decoder_model, target_i2c, target_w2i, input_
             output_tokens, h, c = decoder_model.predict([target_seq] + states_value + [enc_outs])
         else:
             output_tokens, h, c = decoder_model.predict([target_seq] + states_value)
-
+        
         states_value = [h, c]
         char_ind = np.argmax(output_tokens[0, -1, :])
 

@@ -2,8 +2,8 @@ from nltk.corpus import wordnet as wn
 import re
 import sys
 
-in_fname = sys.argv[1]
-out_fname = sys.argv[2]
+in_fname = sys.argv[1]  #$RESULTS.txt
+out_fname = sys.argv[2] #$RESULTS.out.txt
 
 # ------------------------------- #
 # NB. Output column order:
@@ -30,12 +30,20 @@ out_fname = sys.argv[2]
 # ------------------------------- #
 
 def pred_gold_ident(pred_syn, gold_syn):
+    """
+    1. check if the predicted synset equals to the gold synsets in validation set
+    2. check if the predicted synset is in the hypernyms set of wordNet
+    """
     is_gold_dev = pred_syn == gold_syn  # needs revision (cases where multiple golds exist in WN18RR's train & dev set)
     is_gold_wn = pred_syn in node_syn.hypernyms() or pred_syn in node_syn.instance_hypernyms()
     return is_gold_dev, is_gold_wn
 
 
 def lex_ident(node_syn, pred_syn, gold_syn):
+    """
+    1. check if the predicted synset's lexname equals to the gold synset's name
+    2. check if the predicted synset's lexname is in the set of its wordnet hypernyms' lexnames (including hypernyms/instance_hypernyms)
+    """
     pred_lex = pred_syn.lexname()
     gold_lex = gold_syn.lexname()
 
@@ -46,6 +54,7 @@ def lex_ident(node_syn, pred_syn, gold_syn):
 
 
 def wup_score(pred_syn, gold_syn):
+    """ Calculate the wup score for predicted synset and gold synset"""
     if pred_syn == gold_syn:
         wup_dev = 1.00
     else:
@@ -53,6 +62,7 @@ def wup_score(pred_syn, gold_syn):
         if wup_dev is None:
             wup_dev = 0.00
 
+    # if the predicted sysnet is in the set of wordnet hypernyms/ instance hypernyms ==> correct
     if pred_syn in node_syn.hypernyms() or pred_syn in node_syn.instance_hypernyms():
         wup_wn_max = 1.00
     else:
@@ -79,8 +89,9 @@ with open(out_fname, 'w') as rerank_file:
                               'lex_ident_dev', 'lex_ident_wn',
                               'wup_dev', 'wup_wn_max'))
 
-    for line in corpus:
+    for line in corpus: # each predicted pairs 
         node, rel_raw, gold, pred = line.split('\t')
+
         rel_raw = rel_raw[1:]
 
         # Load node and gold synsets from WordNet in NLTK
@@ -88,6 +99,7 @@ with open(out_fname, 'w') as rerank_file:
         gold_syn = wn.synset(gold)
 
         # If the line has no prediction at all: pred = '<unk>'
+        #for i in range(len(pred)):  #TODO
         if pred == '':
             pred = '<unk>'
 
@@ -100,8 +112,10 @@ with open(out_fname, 'w') as rerank_file:
         else:  # 'instance_hypernym'
             rel = rel_raw
 
+
+
         # If predicted <unk> (or no prediction at all)
-        if pred == '<unk>':
+        if pred == '<unk>':     #TODO
             pred_syn = None
             pred_lex = None
             is_gold_dev = False

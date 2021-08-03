@@ -23,7 +23,6 @@ def h_at_1_wordnet(df_sub):
     h_at_1_wn = ig_wn_true_cnt / (ig_wn_true_cnt + ig_wn_false_cnt) * 100
     return round(h_at_1_wn, 2)
 
-
 def lex_ident_dev_accuracy(df_sub):
     true_cnt = sum(df_sub.loc[:, 'lex_ident_dev']==True)
     false_cnt = sum(df_sub.loc[:, 'lex_ident_dev']==False)

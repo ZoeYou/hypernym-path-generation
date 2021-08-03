@@ -4,10 +4,11 @@ from torch.utils.data import Dataset, DataLoader
 
 def load_data(file, synset2idx, model_opt, opt, max_seq_len, shuffle=True):
     # load training/validation data
-    if model_opt != 'nn':
+    if model_opt != 'nn':                 
         data = DataLoader(
-            DataProducer(file, synset2idx, cuda=opt.cuda, max_len=max_seq_len, debug=opt.debug),
+            DataProducer(file, synset2idx, neg=opt.neg, cuda=opt.cuda, max_len=max_seq_len, debug=opt.debug),
             batch_size=opt.batch_size, shuffle=shuffle)
+         
     else:
         data = DataLoader(
             NNDataProducer(file, synset2idx, cuda=opt.cuda, max_len=max_seq_len),
@@ -39,7 +40,7 @@ def load_hyponym(file, synset2idx):
 
             if synset not in synset2idx:
                 print(synset)
-                print(synset2idx['clangor.v.01'])
+                #print(synset2idx['clangor.v.01'])
                 raise ValueError(f'Synset {synset} not found in indexer')
 
             hyponyms.append(synset2idx[synset] if synset in synset2idx else len(synset2idx))
@@ -52,15 +53,15 @@ class DataProducer(Dataset):
             lines = in_f.readlines()
         if debug:
             lines = lines[:1024]
-        # print(len(lines))
+            #print(len(lines))
 
         self.seqs = sorted([line.strip().split() for line in lines], key=lambda x: len(x), reverse=True)
-        # print(self.seqs[:100])
-        # print(len(self.seqs))
+        #print(self.seqs[:100])
+        #print(len(self.seqs))
         if not neg:
             self.seqs = [instance for instance in self.seqs if instance[-1] == '1']
 
-            # print(f'neg: {neg} len: {len(self.seqs)}')
+            print(f'neg: {neg} len: {len(self.seqs)}')
         self.syn2idx = synset2idx
 
         self.cuda = cuda

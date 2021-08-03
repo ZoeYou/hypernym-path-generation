@@ -41,8 +41,8 @@ def main(opt):
     logging.info(f'SETTINGS : hidden_dim : {HIDDEN_DIM} gamma:{opt.gamma}')
     logging.info(f'TRAINING DATA: {opt.train}')
 
-    synset2idx = get_synset2index('data/all_wn18.path')
-    idx2synset = list(synset2idx.keys())
+    synset2idx = get_synset2index('WN18RR-hp/all_paths.txt') # create index for synsets
+    idx2synset = list(synset2idx.keys()) # keys are the synsets, while values are the index 
 
     embeddings = load_embeddings(opt.embeddings, synset2idx.keys(), debug=opt.debug)
 
@@ -72,7 +72,8 @@ def main(opt):
 
     # start training loops
     if not opt.test_only:
-        # load training/validation data
+        # load training/validation data 
+      
         train_data = load_data(opt.train, synset2idx, model_opt, opt, max_seq_len, shuffle=True)
         dev_data = load_data(opt.dev, synset2idx, model_opt, opt, max_seq_len)
 
@@ -90,7 +91,7 @@ def main(opt):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--embeddings", default='ft-embs-all-lower.vec')
+    parser.add_argument("--embeddings", default='seq2seq/embs/ft-embs-all-lower.vec')
     parser.add_argument("--embedding_dim", default=300)
     parser.add_argument("--train", default='data/train11.path')
     parser.add_argument("--dev", default='data/valid.path')
@@ -113,7 +114,7 @@ if __name__ == '__main__':
     parser.add_argument("--neg", action='store_const', const=True, default=False)
     parser.add_argument("--gamma", default=0.0, type=float, help='margin_loss_hyper-parameter')
     parser.add_argument("--hit", type=int, default=10)
-    parser.add_argument("--seq_len", type=int, default=2)
+    parser.add_argument("--seq_len", type=int, default=20)
 
     options = parser.parse_args()
 

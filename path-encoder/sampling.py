@@ -16,7 +16,7 @@ elif method == 'r':
     raw_instances = []
     with open(in_fname) as in_f:
         for line in in_f:
-            raw_instances.append(line.strip().split('\t'))
+            raw_instances.append(line.strip().split(' '))
     raw_instances = raw_instances
     instances = []
     for idx, raw_inst in enumerate(raw_instances):
@@ -29,10 +29,10 @@ elif method == 'r':
             while rand_idx == idx or rand_idx in rand_idxes:
                 rand_idx = random.randint(0, len(raw_instances) - 1)
             rand_idxes.append(rand_idx)
-
+          
         try:
-            for idx in rand_idxes:
-                instances.append(raw_instances[idx][0:-1] + [raw_inst[-1]] + ['0'])
+            for idx_r in rand_idxes:
+                instances.append(raw_instances[idx_r][0:-1] + [raw_inst[-1]] + ['0'])
         except IndexError:
             print(rand_idx, len(raw_instances))
             raise IndexError

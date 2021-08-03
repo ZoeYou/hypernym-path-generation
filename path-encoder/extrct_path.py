@@ -18,7 +18,8 @@ if __name__ == '__main__':
                 words.append((l[0], synset_to_path[l[0]]))
             else:
                 words_unknown.append(words_unknown)
-
+   
+    # print all paths to file
     with open('test_full_path', 'w') as out_f:
         for word, paths in words:
             for idx, path in enumerate(paths):

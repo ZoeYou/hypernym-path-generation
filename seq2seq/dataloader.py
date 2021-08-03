@@ -28,6 +28,9 @@ def get_emb_matrix(target_i2w, w2v, EMB_DIM, unk_size=0.25, oov_filename=None):
 def load_embs(embfile):
     with open(embfile,'r',encoding='utf8') as fd:
         t = fd.readlines()
+        if len(t[0].strip().split())==2:
+            t = t[1:]
+
     t = [i.strip() for i in t]
     t = [i.split(' ') for i in t]
     words = [i[0] for i in t]

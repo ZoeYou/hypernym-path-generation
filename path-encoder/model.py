@@ -31,7 +31,7 @@ class PathEncoder(nn.Module):
         :param lengths: long tensor in the shape (batch_size)
         :return: float tensor of the concatenated last hidden state in the shape (batch_size, dim_hidden)
         """
-        path = pack_padded_sequence(path, lengths, batch_first=True, enforce_sorted=False)
+        path = pack_padded_sequence(path, lengths.cpu(), batch_first=True, enforce_sorted=False)
         lstm_out, self.hidden = self.lstm(path, self.hidden)
         return self.dropout(torch.cat((self.hidden[0][0,:,:], self.hidden[0][1,:,:]), dim=1))
 
@@ -42,7 +42,7 @@ class EmbeddingLayer(nn.Module):
     """
     def __init__(self, pretrain_embedding, num_embedding, dim_embedding, padding_idx):
         super(EmbeddingLayer, self).__init__()
-        self.embedding = nn.Embedding(num_embedding, dim_embedding)
+        self.embedding = nn.Embedding(num_embedding, dim_embedding, padding_idx)
         self.embedding.weight.data.copy_(pretrain_embedding)
         self.embedding.weight.requires_grad = False
 
@@ -83,7 +83,7 @@ class EmbeddingReg(nn.Module):
         self.embedding = EmbeddingLayer(pretrain_embedding, num_embedding, dim_embedding, padding_idx)
         self.path_encoder = PathEncoder(batch_size, dim_embedding, dim_hidden, drop_rate, max_len, cuda=cuda)
         self.project = nn.Linear(dim_embedding, dim_hidden)
-        self.top_word = nn.Linear(dim_hidden, dim_out)
+        #self.top_word = nn.Linear(dim_hidden, dim_out)
         self.top_path = nn.Linear(dim_hidden, dim_out)
         # self.cuda = cuda
 

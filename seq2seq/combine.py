@@ -8,6 +8,9 @@ if __name__ == '__main__':
     epochs = sys.argv[4]
     category = sys.argv[5] # verbs, nouns or instnouns
     split = sys.argv[6]    # val, or test
+    """
+    python3 combine.py src-valid.txt tgt-valid.txt  pred-val-60.txt 60 instnouns val 1
+    """
 
     #optional (if used 'reversed' version, hypernym is first, not last)
     try: # use 1 here if want reversed.
@@ -45,5 +48,5 @@ if __name__ == '__main__':
 
     with open('y_results_'+epochs+'e_'+category+'_'+ split +'.txt','w') as fd:
         for ii,i in enumerate(pred):
-            fd.write(srcval[ii]+'\t'+hyp_name+'\t'+tgtval[ii]+'\t'+pred[ii]+'\n' )
+            fd.write(srcval[ii]+'\t'+hyp_name+'\t'+tgtval[ii]+'\t'+ pred[ii]+'\n' )
 

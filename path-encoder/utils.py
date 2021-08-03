@@ -9,7 +9,7 @@ def get_synset2index(dataset):
     synsets2idx = {'<PAD>': 0}
     with open(dataset) as in_f:
         for line in in_f:
-            for synset in line.strip().split('\t'):
+            for synset in line.strip().split(' '):
                 if synset not in synsets2idx:
                     synsets2idx[synset] = len(synsets2idx)
     return synsets2idx
@@ -26,7 +26,7 @@ def load_embeddings(embeddings_f, synset2index, debug=False):
             if len(l) > 1:
                 synset2embedding[l[0]] = np.asarray([float(item) for item in l[1:]])
         lines.set_description('loading embeddings ---done!')
-    embedding_dim = len(synset2embedding[next(iter(synset2embedding))])
+    embedding_dim = len(synset2embedding[next(iter(synset2embedding))]) # next(iter(dict)) to get the first key of dict
     embeddings = []
     num_unseen = 0
     unseen_synsets = []
