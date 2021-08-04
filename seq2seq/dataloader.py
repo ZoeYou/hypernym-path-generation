@@ -50,7 +50,7 @@ def load_dict_from_json(filename):
     return data
 
 
-def load_data(filename, numlines=None, optional_processing=False):#50000):
+def load_data(filename, to_reverse_tgt=False, numlines=None, optional_processing=False):#50000):
     """ filename: either str (name of file; the file must be a list of pairs
         in the form src \t tgt) or tuple (src, tgt).
 
@@ -84,6 +84,9 @@ def load_data(filename, numlines=None, optional_processing=False):#50000):
         exclude = set(string.punctuation)
         lines.src=lines.src.apply(lambda x: ''.join(ch for ch in x if ch not in exclude))
         lines.tgt=lines.tgt.apply(lambda x: ''.join(ch for ch in x if ch not in exclude))
+    
+    if to_reverse_tgt:
+        lines.tgt = lines.tgt.apply(lambda x: ' '.join(x.split()[::-1]))
 
     lines.tgt = lines.tgt.apply(lambda x : 'START_ '+ x + ' _END')
 

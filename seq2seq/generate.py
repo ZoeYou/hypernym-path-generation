@@ -62,18 +62,18 @@ if __name__ == '__main__':
                 sent = sent.strip(' _END')    
                 temp.append(sent) 
             generated.append(temp)
-            #print(input_i2w[input_seq[0,0]] ,":", temp)
+            print(input_i2w[input_seq[0,0]] ,":", temp)
 
         with open(PRED_FILENAME,'w',encoding='utf8') as fd:
             for g in generated:
                 fd.write('|'.join(g) + '\n')
     else:
-        for ii in trange(encoded_inputs.shape[0][:3]):
+        for ii in trange(encoded_inputs.shape[0]):
             input_seq = encoded_inputs[ii:ii+1]
             d2,c2 = decode_sequence(encoder_model, decoder_model, target_i2w, target_w2i, input_seq, DECODING_INFO)
             d2s = d2.strip(' _END')
             generated.append(d2s)
-            #print(ii,d2s)
+            print(ii,d2s)
         with open(PRED_FILENAME,'w',encoding='utf8') as fd:
             for g in generated:
                 fd.write(g+'\n')

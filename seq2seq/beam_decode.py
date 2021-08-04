@@ -40,42 +40,41 @@ def beam_search_decoder(encoder_model, decoder_model, target_i2c, target_w2i, in
 
         for prob, sent_predict in k_beam:
             if has_attention:
-                output_tokens, h, c = decoder_model.predict([sent_predict] + states_value + [enc_outs]) #TODO
+                output_tokens = decoder_model.predict([sent_predict] + states_value + [enc_outs])[0]
             else:
-                output_tokens, h, c = decoder_model.predict([sent_predict] + states_value)
-
-        states_value = [h,c]
+                output_tokens = decoder_model.predict([sent_predict] + states_value)[0]
+ 
         # top k!
         possible_k = output_tokens[0, l, :].argsort()[-k:][::-1]
-        print('possible k', possible_k)
       
         # add to all possible candidates for k-beams
         all_k_beams += [
             (
-                sum(np.log(output_tokens[0, i, sent_predict[0,i+1]]) for i in range(l)) + np.log(output_tokens[0,l,next_wid]),
+                (sum(np.log(output_tokens[0, i, sent_predict[0,i+1]]) for i in range(l)) + np.log(output_tokens[0,l,next_wid])) / (l+1),
                 np.array(list(sent_predict[0,:l+1]) + [next_wid] + [target_w2i['_END']] * (max_decoder_seq_length -l-1)).reshape(1,-1)
             )
             for next_wid in possible_k
         ]
-        # top 2k (not top k, just in case all the k sentences are ended)
-        k_beam = sorted(all_k_beams)[-2*k:]
-        print(66666)
-        print(k_beam)
-
-
-
+        
+        k_beam = sorted(all_k_beams, key=lambda x: (x[0], x[1]))[-k:]
         
         # check if there is sentence that has already ended
         to_pop = []
         for i in reversed(range(len(k_beam))):
             sent = k_beam[i][1]
-            if sent[0, l+1] == target_w2i['_END']:
-                ended.append(k_beam[i])
-                k_beam.pop(i)
+            pred_token = sent[0,l+1]
 
-        k_beam = k_beam[:k]
-  
-    k_beam = sorted(k_beam + ended, reverse=True)[:k]
-    k_sents = [' '.join([target_i2c[token] for token in beam[1][0][1:]]) for beam in k_beam]    
-    return k_sents
+            #if pred_token in [target_w2i['_END'], target_w2i['entity.n.01']]:
+            if pred_token == target_w2i['_END']:
+                ended.append(k_beam[i])
+                del k_beam[i]
+            
+            elif pred_token in sent[0,:l+1]:
+                ended += [(k_beam[i][0], np.array(sent[0,:l+1]).reshape(1,-1))]
+                del k_beam[i]
+
+    k_beam = sorted(k_beam + ended, key=lambda x: (x[0], x[1]), reverse=True)[:k]
+    k_sents = [' '.join([target_i2c[token] for token in beam[1][0][1:]]) for beam in k_beam]   
+    
+    return list(set(k_sents))
 
