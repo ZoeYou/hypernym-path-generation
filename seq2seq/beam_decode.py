@@ -1,6 +1,12 @@
 import numpy as np
 import dataloader
 
+
+def softmax(x):
+    """Compute softmax values for each sets of scores in x."""
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum(axis=0)
+
 def beam_search_decoder(encoder_model, decoder_model, target_i2c, target_w2i, input_seq, decoding_json, k=10):
     """ Beam search decoder 
         reference from: https://github.com/mmehdig/lm_beam_search/blob/master/beam_search.py
@@ -70,10 +76,13 @@ def beam_search_decoder(encoder_model, decoder_model, target_i2c, target_w2i, in
                 del k_beam[i]
             
             elif pred_token in sent[0,:l+1]:
-                ended += [(k_beam[i][0], np.array(sent[0,:l+1]).reshape(1,-1))]
+                sent[0,l+1] = target_w2i['_END']
+                ended += [(k_beam[i][0], np.array(sent).reshape(1,-1))]
                 del k_beam[i]
 
     k_beam = sorted(k_beam + ended, key=lambda x: (x[0], x[1]), reverse=True)[:k]
+
+    #scores = softmax([beam[0] for beam in k_beam])
     k_sents = [' '.join([target_i2c[token] for token in beam[1][0][1:]]) for beam in k_beam]   
     
     return list(set(k_sents))

@@ -130,7 +130,7 @@ def prepare_data_shared(lines):
     #all_tgt_words = all_tgt_words - {'START_'}
 
     #input_words = sorted(list(all_src_words))
-    target_words = ['START_']+sorted(list(all_words)) # want 'START_' to be the first
+    target_words = ['START_']+sorted(list(all_words))+['<OOV>'] # want 'START_' to be the first/ <OOV> to be the last
 
     #NOTE: want the first entry (0th) to correspond to the start symbol
     #input_w2i = dict(
@@ -184,7 +184,10 @@ def encode_texts(input_texts, input_w2i, max_source_sentence):
 
     for i, input_text in enumerate(input_texts):
         for t, word in enumerate(input_text.split()):
-            encoder_input[i, t] = input_w2i[word] #TODO get keyerror now.. what about OOV?
+            try:
+                encoder_input[i, t] = input_w2i[word] #TODO get keyerror now.. what about OOV?
+            except KeyError:
+                encoder_input[i, t] = input_w2i['<OOV>']
 
     return encoder_input
 

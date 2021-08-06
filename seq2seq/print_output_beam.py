@@ -92,8 +92,15 @@ def mean_max_wup_score(pred_syns, gold_syns, is_wn = True):
 
 def hits_at_k(pred_labels, gold_labels, k):
     top_k = pred_labels[:k]
-    return sum([gold in top_k for gold in gold_labels]) / len(gold_labels)
+    res = sum([gold in top_k for gold in gold_labels]) / len(gold_labels)
+    if len(gold_labels) <= k:
+        return res
+    else:
+        return res * (len(gold_labels)/k)
 
+
+
+ 
 
             
 
